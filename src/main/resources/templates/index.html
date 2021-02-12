@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="description" content="">
+        <meta name="author" content="">
+
+        <title>Tickets Initium</title>
+
+        <!-- Bootstrap core CSS -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"
+              integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+        <link href="/css/perzonalizado.css" rel="stylesheet" type="text/css" />
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+    </head>
+
+    <body class="text-center">
+
+        <br> <br>
+
+        <div class="container h-100 d-flex align-items-center justify-content-center">
+            <img class="mb-4"
+                 src="https://www.initiumsoft.com/var/site/storage/images/9/1/2/0/219-20-esl-ES/Initium%20Logo_150.png"
+                 alt="" width="100" height="100">
+        </div>
+
+        <br> <br>
+
+        <div class="container h-100 d-flex align-items-center justify-content-center">
+
+            <script>
+                $(document).ready(function () {
+
+                    const path = "http://localhost:8080/api";
+                    const json = "application/json; charset=utf-8";
+                    const methodPost = "POST";
+                    const methodGet = "GET";
+                    const endPointGuardarTicket = "/guardar-ticket";
+                    const endPointListarTickets = "/mostrar-tickets-activos";
+                    const dataList = "";
+                    const isSuccess = false;
+
+                    function getListaTickets() {
+                        
+                        $("#listaTickets tr").remove();
+                        $.ajax({
+                            url: path + endPointListarTickets,
+                            contentType: json,
+                            type: methodGet,
+                            dataType: 'json',
+                            success: function (data) {
+                                console.log(data);
+                                
+                                $.each(data, function (i, item) {
+
+                                    var lista = document.getElementById("listaTickets");
+                                    var tr = document.createElement("tr");
+                                    var columnaUno = document.createElement("td")
+                                    var columnaDos = document.createElement("td")
+                                    var columnaTres = document.createElement("td")
+                                    var columnaCuatro = document.createElement("td")
+
+                                    columnaUno.innerHTML = item.id;
+                                    columnaDos.innerHTML = item.name;
+                                    columnaTres.innerHTML = item.idClient;
+                                    columnaCuatro.innerHTML = item.line;
+
+                                    lista.appendChild(tr);
+                                    tr.appendChild(columnaUno);
+                                    tr.appendChild(columnaDos);
+                                    tr.appendChild(columnaTres);
+                                    tr.appendChild(columnaCuatro);
+                                });
+                            },
+                            error: function (errorThrown) {
+                                console.log(errorThrown);
+                            }
+                        });
+                    }
+
+
+                    $("#gt").submit(function () {
+
+                        var datosForm = {
+                            name: $("#nombreCliente").val(),
+                            idClient: $("#idCliente").val()
+                        }
+
+                        var body = JSON.stringify(datosForm);
+
+                        $.ajax({
+                            url: path + endPointGuardarTicket,
+                            contentType: json,
+                            type: methodPost,
+                            dataType: 'json',
+                            data: body,
+                            success: function (data) {
+                                isSuccess = true;
+                            },
+                            error: function (errorThrown) {
+                                console.log(errorThrown);
+                            }
+                        });
+                        $("#gt")[0].reset();
+                        return false;
+                    });
+
+                    setInterval(function () {
+                        getListaTickets();
+                    }, 2000);
+
+                });
+            </script>
+
+            <form class="form-inline" id="gt" method="POST">
+
+                <div class="form-group mx-sm-3 mb-2">
+                    <label for="idCliente" class="sr-only">Id del cliente</label>
+                    <input class="form-control" id="idCliente" placeholder="id cliente" required>
+                </div>
+                <div class="form-group mx-sm-3 mb-2">
+                    <label for="nombreCliente" class="sr-only">Nombre del cliente</label>
+                    <input class="form-control" id="nombreCliente" placeholder="nombre cliente" required>
+                </div>
+                <button type="submit" class="btn btn-primary mb-2">Aceptar</button>
+            </form>
+
+        </div>
+
+        <br> <br>
+
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th scope="col">Nro de Ticket</th>
+                    <th scope="col">Nombre del Cliente</th>
+                    <th scope="col">ID Cliente</th>
+                    <th scope="col">Cola de Atención</th>
+                </tr>
+            </thead>
+
+            <tbody id="listaTickets">
+
+            </tbody>
+        </table>
+    </body>
+
+</html>
